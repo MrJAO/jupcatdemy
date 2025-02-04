@@ -12,44 +12,18 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const questData = [
-                {
-                    title: "Complete Your First Quest!",
-                    tasks: [
-                        { name: "Follow us on Twitter", link: "https://twitter.com/yourpage", requiresAnswer: false },
-                        { name: "Like & Retweet our pinned post", link: "https://twitter.com/yourpage/status/123456789", requiresAnswer: true, placeholder: "Enter the link to your retweet..." },
-                        { name: "Join our Discord", link: "https://discord.gg/yourdiscord", requiresAnswer: true, placeholder: "Enter your Discord username..." },
-                        { name: "Submit your username in the form", link: "", requiresAnswer: true, placeholder: "Enter your in-game username..." },
-                        { name: "Bonus Task - Share on Facebook", link: "https://facebook.com/", requiresAnswer: false, placeholder: "Paste your Facebook post link..." }
-                    ],
-                    submissionForm: "https://forms.gle/your-google-form-link",
-                    bannerImage: "https://assets.zyrosite.com/YrDNjZ3x5OSGqDr1/panel-1---updated-mp8qblk4yasWVlp9.png"
-                },
-                {
-                    title: "Complete Your Second Quest!",
-                    tasks: [
-                        { name: "Follow us on Instagram", link: "https://instagram.com/yourpage", requiresAnswer: false },
-                        { name: "Share our latest post", link: "https://instagram.com/yourpage/post/123456", requiresAnswer: true, placeholder: "Enter the link to your post..." },
-                        { name: "Join our Telegram", link: "https://t.me/yourtelegram", requiresAnswer: true, placeholder: "Enter your Telegram username..." },
-                        { name: "Submit your in-game nickname", link: "", requiresAnswer: true, placeholder: "Enter your in-game nickname..." },
-                        { name: "Bonus Task - Comment on our Blog", link: "https://yourwebsite.com/blog", requiresAnswer: true, placeholder: "Enter your comment..." }
-                    ],
-                    submissionForm: "https://forms.gle/another-google-form-link",
-                    bannerImage: "https://assets.zyrosite.com/YrDNjZ3x5OSGqDr1/panel-2---updated-mp8qblk4yasWVlp9.png"
-                },
-                {
-                    title: "Complete Your Third Quest!",
-                    tasks: [
-                        { name: "Follow us on TikTok", link: "https://tiktok.com/@yourpage", requiresAnswer: false },
-                        { name: "Watch our latest video", link: "https://youtube.com/yourpage", requiresAnswer: true, placeholder: "Enter the link to the video..." },
-                        { name: "Join our Email Newsletter", link: "https://yourwebsite.com/newsletter", requiresAnswer: true, placeholder: "Enter your email..." },
-                        { name: "Submit your username in the form", link: "", requiresAnswer: true, placeholder: "Enter your in-game username..." },
-                        { name: "Bonus Task - Share a Testimonial", link: "https://yourwebsite.com/testimonials", requiresAnswer: true, placeholder: "Write your testimonial..." }
-                    ],
-                    submissionForm: "https://forms.gle/third-google-form-link",
-                    bannerImage: "https://assets.zyrosite.com/YrDNjZ3x5OSGqDr1/panel-3---updated-mp8qblk4yasWVlp9.png"
-                }
-            ];
+            const questData = {
+                title: "Complete Your First Quest!",
+                tasks: [
+                    { name: "Follow us on Twitter", link: "https://twitter.com/yourpage", requiresAnswer: false },
+                    { name: "Like & Retweet our pinned post", link: "https://twitter.com/yourpage/status/123456789", requiresAnswer: true, placeholder: "Enter the link to your retweet..." },
+                    { name: "Join our Discord", link: "https://discord.gg/yourdiscord", requiresAnswer: true, placeholder: "Enter your Discord username..." },
+                    { name: "Submit your username in the form", link: "", requiresAnswer: true, placeholder: "Enter your in-game username..." },
+                    { name: "Bonus Task - Share on Facebook", link: "https://facebook.com/", requiresAnswer: false, placeholder: "Paste your Facebook post link..." }
+                ],
+                submissionForm: "https://forms.gle/your-google-form-link",
+                bannerImage: "https://assets.zyrosite.com/YrDNjZ3x5OSGqDr1/panel-1---updated-mp8qblk4yasWVlp9.png"
+            };
 
             function renderQuest(quest) {
                 const container = document.getElementById("quest-container");
@@ -95,10 +69,7 @@
                 window.location.href = questData.submissionForm;
             }
 
-            // Render each quest
-            questData.forEach((quest) => {
-                renderQuest(quest);
-            });
+            renderQuest(questData);
         });
     </script>
 </body>
