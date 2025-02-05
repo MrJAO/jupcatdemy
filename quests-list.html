@@ -1,66 +1,62 @@
 <div id="quest-container"></div>
 
-<script>
-  // Make sure the script runs after the page is fully loaded
-  document.addEventListener("DOMContentLoaded", function() {
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    const SUPABASE_URL = "https://rnpgwjgsnjtjjtyqivew.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJucGd3amdzbmp0amp0eXFpdmV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2NTM0MzUsImV4cCI6MjA1NDIyOTQzNX0.D6x-D2m4lmJevzci_o8d9X7BnJ2ev7VYep-2hROC5BM";
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_URL = "https://rnpgwjgsnjtjjtyqivew.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJucGd3amdzbmp0amp0eXFpdmV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2NTM0MzUsImV4cCI6MjA1NDIyOTQzNX0.D6x-D2m4lmJevzci_o8d9X7BnJ2ev7VYep-2hROC5BM";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const questData = {
-      title: "Complete Your Onboarding Quest!",
-      bannerImage: "https://your-banner-url.com/banner.png"
-    };
+  const questData = {
+    title: "Complete Your Onboarding Quest!",
+    bannerImage: "https://your-banner-url.com/banner.png"
+  };
 
-    async function checkCompletion(username) {
-      let { data } = await supabase
-        .from("quest_submissions")
-        .select("user_identifier, status")
-        .eq("quest_code", "onboarding")
-        .eq("user_identifier", username)
-        .eq("status", true);
+  async function checkCompletion(username) {
+    let { data } = await supabase
+      .from("quest_submissions")
+      .select("user_identifier, status")
+      .eq("quest_code", "onboarding")
+      .eq("user_identifier", username)
+      .eq("status", true);
 
-      return data.length > 0;
+    return data.length > 0;
+  }
+
+  async function submitQuest() {
+    const discord = document.getElementById("task-input-0").value.trim();
+    const twitter = document.getElementById("task-input-1").value.trim();
+    const message = document.getElementById("message");
+
+    if (!discord || !twitter) {
+      message.textContent = "Please fill in all fields.";
+      return;
     }
 
-    async function submitQuest() {
-      const discord = document.getElementById("task-input-0").value.trim();
-      const twitter = document.getElementById("task-input-1").value.trim();
-      const message = document.getElementById("message");
-
-      if (!discord || !twitter) {
-        message.textContent = "Please fill in all fields.";
-        return;
-      }
-
-      if (await checkCompletion(discord) || await checkCompletion(twitter)) {
-        message.textContent = "This user already finished this quest!";
-        return;
-      }
-
-      const { error } = await supabase.from("quest_submissions_pending").insert([ 
-        { quest_code: "onboarding", user_identifier: discord, task_type: "discord", response: discord, status: null },
-        { quest_code: "onboarding", user_identifier: twitter, task_type: "twitter", response: twitter, status: null }
-      ]);
-
-      message.textContent = error ? "Error submitting!" : "Submitted for review!";
+    if (await checkCompletion(discord) || await checkCompletion(twitter)) {
+      message.textContent = "This user already finished this quest!";
+      return;
     }
 
-    // Render the quest UI after DOM is fully loaded
+    const { error } = await supabase.from("quest_submissions_pending").insert([
+      { quest_code: "onboarding", user_identifier: discord, task_type: "discord", response: discord, status: null },
+      { quest_code: "onboarding", user_identifier: twitter, task_type: "twitter", response: twitter, status: null }
+    ]);
+
+    message.textContent = error ? "Error submitting!" : "Submitted for review!";
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Render the quest form only after the DOM has fully loaded
     document.getElementById("quest-container").innerHTML = `
-      <div style="border: 2px solid #444; padding: 15px; border-radius: 10px; width: 400px; background: #000000; color: white; text-align: center; font-family: Arial, sans-serif;">
+      <div style="border: 2px solid #444; padding: 15px; border-radius: 10px; width: 400px; background: #1a1a1a; color: white; text-align: center; font-family: Arial, sans-serif;">
         <img src="${questData.bannerImage}" alt="Quest Banner" style="width: 100%; border-radius: 10px 10px 0 0;">
         <h2 style="margin: 10px 0;">${questData.title}</h2>
-        <input type="text" id="task-input-0" placeholder="Enter your Discord Username" style="width: 90%; padding: 5px; margin: 5px;">
-        <input type="text" id="task-input-1" placeholder="Enter your Twitter Username" style="width: 90%; padding: 5px; margin: 5px;">
-        <button id="submit-btn" style="padding: 10px 20px; background-color: #444; color: white; border: none; border-radius: 5px; cursor: pointer;">Submit</button>
+        <input type="text" id="task-input-0" placeholder="Enter your Discord Username">
+        <input type="text" id="task-input-1" placeholder="Enter your Twitter Username">
+        <button onclick="submitQuest()">Submit</button>
         <p id="message"></p>
       </div>
     `;
-
-    // Attach the submitQuest function to the button click event
-    document.getElementById("submit-btn").addEventListener("click", submitQuest);
   });
 </script>
