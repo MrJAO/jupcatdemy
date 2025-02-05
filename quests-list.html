@@ -49,7 +49,8 @@
     const SUPABASE_ANON_KEY = "your-anon-key"; // Replace with your actual anon key
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function submitQuest() {
+    // Define the submitQuest function globally so it can be accessed by the button
+    window.submitQuest = async function() {
       const discord = document.getElementById("task-input-0").value.trim();
       const twitter = document.getElementById("task-input-1").value.trim();
       if (!discord || !twitter) {
@@ -63,7 +64,7 @@
       ]);
 
       document.getElementById("message").textContent = error ? "Error submitting!" : "Submitted for review!";
-    }
+    };
 
     document.addEventListener("DOMContentLoaded", function () {
       const questData = {
