@@ -1,102 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quest Submission</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #000000;
-      color: white;
-      text-align: center;
-      padding: 50px;
+<div id="quest-container"></div>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  const SUPABASE_URL = "https://rnpgwjgsnjtjjtyqivew.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJucGd3amdzbmp0amp0eXFpdmV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2NTM0MzUsImV4cCI6MjA1NDIyOTQzNX0.D6x-D2m4lmJevzci_o8d9X7BnJ2ev7VYep-2hROC5BM";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const questData = {
+    title: "Complete Your Onboarding Quest!",
+    bannerImage: "https://your-banner-url.com/banner.png"
+  };
+
+  async function checkCompletion(username) {
+    let { data } = await supabase
+      .from("quest_submissions")
+      .select("user_identifier, status")
+      .eq("quest_code", "onboarding")
+      .eq("user_identifier", username)
+      .eq("status", true);
+
+    return data.length > 0;
+  }
+
+  // This is now accessible globally
+  async function submitQuest() {
+    const discord = document.getElementById("task-input-0").value.trim();
+    const twitter = document.getElementById("task-input-1").value.trim();
+    const message = document.getElementById("message");
+
+    if (!discord || !twitter) {
+      message.textContent = "Please fill in all fields.";
+      return;
     }
-    #quest-container {
-      border: 2px solid #444;
-      padding: 15px;
-      border-radius: 10px;
-      width: 400px;
-      background: #1a1a1a;
-      color: white;
+
+    if (await checkCompletion(discord) || await checkCompletion(twitter)) {
+      message.textContent = "This user already finished this quest!";
+      return;
     }
-    input {
-      width: 90%;
-      padding: 5px;
-      margin: 5px 0;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #444;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #666;
-    }
-  </style>
-</head>
-<body>
-  <h1>Quest Submission</h1>
-  <div id="quest-container"></div>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const { error } = await supabase.from("quest_submissions_pending").insert([ 
+      { quest_code: "onboarding", user_identifier: discord, task_type: "discord", response: discord, status: null },
+      { quest_code: "onboarding", user_identifier: twitter, task_type: "twitter", response: twitter, status: null }
+    ]);
 
-    const SUPABASE_URL = "https://your-supabase-url.supabase.co";
-    const SUPABASE_ANON_KEY = "your-anon-key"; // Replace with your actual anon key
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    message.textContent = error ? "Error submitting!" : "Submitted for review!";
+  }
 
-    // Define the submitQuest function globally so it can be accessed by the button
-    window.submitQuest = async function() {
-      const discord = document.getElementById("task-input-0").value.trim();
-      const twitter = document.getElementById("task-input-1").value.trim();
-      if (!discord || !twitter) {
-        document.getElementById("message").textContent = "Please fill in all fields.";
-        return;
-      }
-
-      const { error } = await supabase.from("quest_submissions_pending").insert([
-        { quest_code: "onboarding", user_identifier: discord, task_type: "discord", response: discord, status: null },
-        { quest_code: "onboarding", user_identifier: twitter, task_type: "twitter", response: twitter, status: null }
-      ]);
-
-      document.getElementById("message").textContent = error ? "Error submitting!" : "Submitted for review!";
-    };
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const questData = {
-        quest_code: "onboarding",
-        title: "Complete Your Onboarding Quest!",
-        tasks: [
-          { name: "Enter your Discord Username", type: "discord", requiresAnswer: true, placeholder: "e.g. User#1234" },
-          { name: "Enter your Twitter Username", type: "twitter", requiresAnswer: true, placeholder: "e.g. @user123" }
-        ],
-        bannerImage: "https://your-onboarding-banner.png" // Replace with your actual banner URL
-      };
-
-      function renderQuest(quest) {
-        const container = document.getElementById("quest-container");
-        container.innerHTML = `
-          <div>
-            <img src="${quest.bannerImage}" style="width: 100%; border-radius: 10px 10px 0 0;">
-            <h2>${quest.title}</h2>
-            ${quest.tasks.map((task, index) => `
-              <div>
-                <span>${task.name}</span>
-                <input type="text" id="task-input-${index}" placeholder="${task.placeholder}">
-              </div>
-            `).join("")}
-            <button id="submit-btn" onclick="submitQuest()">Submit</button>
-            <p id="message"></p>
-          </div>
-        `;
-      }
-
-      renderQuest(questData);
-    });
-  </script>
-</body>
-</html>
+  // Render the quest UI
+  document.getElementById("quest-container").innerHTML = `
+    <div style="border: 2px solid #444; padding: 15px; border-radius: 10px; width: 400px; background: #000000; color: white; text-align: center; font-family: Arial, sans-serif;">
+      <img src="${questData.bannerImage}" alt="Quest Banner" style="width: 100%; border-radius: 10px 10px 0 0;">
+      <h2 style="margin: 10px 0;">${questData.title}</h2>
+      <input type="text" id="task-input-0" placeholder="Enter your Discord Username" style="width: 90%; padding: 5px; margin: 5px;">
+      <input type="text" id="task-input-1" placeholder="Enter your Twitter Username" style="width: 90%; padding: 5px; margin: 5px;">
+      <button onclick="submitQuest()" style="padding: 10px 20px; background-color: #444; color: white; border: none; border-radius: 5px; cursor: pointer;">Submit</button>
+      <p id="message"></p>
+    </div>
+  `;
+</script>
