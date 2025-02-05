@@ -4,7 +4,7 @@ const { createClient } = require("@supabase/supabase-js");
 const app = express();
 app.use(express.json());
 
-const SUPABASE_URL = "https://your-supabase-url.supabase.co";
+const SUPABASE_URL = "https://rnpgwjgsnjtjjtyqivew.supabase.co";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY; // Use an environment variable for the key
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
