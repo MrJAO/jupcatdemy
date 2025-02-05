@@ -45,9 +45,25 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    const SUPABASE_URL = "https://rnpgwjgsnjtjjtyqivew.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJucGd3amdzbmp0amp0eXFpdmV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2NTM0MzUsImV4cCI6MjA1NDIyOTQzNX0.D6x-D2m4lmJevzci_o8d9X7BnJ2ev7VYep-2hROC5BM"; // Replace with your actual anon key
+    const SUPABASE_URL = "https://your-supabase-url.supabase.co";
+    const SUPABASE_ANON_KEY = "your-anon-key"; // Replace with your actual anon key
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function submitQuest() {
+      const discord = document.getElementById("task-input-0").value.trim();
+      const twitter = document.getElementById("task-input-1").value.trim();
+      if (!discord || !twitter) {
+        document.getElementById("message").textContent = "Please fill in all fields.";
+        return;
+      }
+
+      const { error } = await supabase.from("quest_submissions_pending").insert([
+        { quest_code: "onboarding", user_identifier: discord, task_type: "discord", response: discord, status: null },
+        { quest_code: "onboarding", user_identifier: twitter, task_type: "twitter", response: twitter, status: null }
+      ]);
+
+      document.getElementById("message").textContent = error ? "Error submitting!" : "Submitted for review!";
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
       const questData = {
@@ -76,22 +92,6 @@
             <p id="message"></p>
           </div>
         `;
-      }
-
-      async function submitQuest() {
-        const discord = document.getElementById("task-input-0").value.trim();
-        const twitter = document.getElementById("task-input-1").value.trim();
-        if (!discord || !twitter) {
-          document.getElementById("message").textContent = "Please fill in all fields.";
-          return;
-        }
-
-        const { error } = await supabase.from("quest_submissions_pending").insert([
-          { quest_code: "onboarding", user_identifier: discord, task_type: "discord", response: discord, status: null },
-          { quest_code: "onboarding", user_identifier: twitter, task_type: "twitter", response: twitter, status: null }
-        ]);
-
-        document.getElementById("message").textContent = error ? "Error submitting!" : "Submitted for review!";
       }
 
       renderQuest(questData);
